@@ -1,0 +1,127 @@
+project:
+  name: dc_zone40_fullfield_diffsrda_analysis_ensemble
+  seed: 2026
+  root_dir: ..
+  output_dir: artifacts
+
+data:
+  raw_dir: data/raw
+  samples_dir: data/raw/samples
+  metadata_dir: data/raw/metadata
+  parameters_csv: data/raw/dataset_300_parameters.csv
+  mesh_npz: data/raw/mesh.npz
+  zone_cells_npz: data/raw/zone3d_connected_v3_cells.npz
+  zone_config_json: data/raw/zone3d_connected_v3_config.json
+  zone_summary_json: data/raw/zone3d_connected_v3_summary.json
+  sensor_csv: data/raw/real_cold_aisle_sensor_layout_12.csv
+  equipment_csv: data/raw/equipment_physical_layout_original.csv
+  zone_graph_csv: null
+  expected_cells: 1438769
+  expected_fluid_zones: 40
+  expected_frames: 61
+  expected_times_s:
+    start: 0
+    stop: 1800
+    step: 30
+  temperature_key: temperature_C
+  time_key: times_s
+  cell_chunk: 131072
+  cache_temperature_dtype: float32
+
+geometry:
+  device_shell_m: 0.18
+  device_mapping_min_cells: 8
+
+split:
+  train: 0.70
+  validation: 0.15
+  test: 0.15
+
+model:
+  history_length: 4
+  rollout_steps: 4
+  rollout_weight: 1.0
+
+dynamics:
+  residual_hidden: 64
+  residual_tcn_blocks: 2
+  residual_graph_blocks: 2
+  residual_max_C_per_step: 0.25
+  residual_l2_weight: 0.01
+  # Shared trainable effective gains after RMS scaling of the three physical features.
+  initial_core_gains_C: [0.03, 0.03, 0.03]
+
+autoencoder:
+  latent_dim_per_zone: 32
+  point_hidden: 128
+  decoder_hidden: 256
+  coord_fourier_frequencies: 4
+  zone_embedding_dim: 16
+  encoder_cell_chunk: 65536
+  decoder_cell_chunk: 65536
+  latent_l2_weight: 1.0e-6
+
+superresolution:
+  condition_hidden: 128
+  condition_graph_blocks: 1
+  diffusion_hidden: 256
+
+train:
+  epochs: 500
+  learning_rate: 3.0e-4
+  autoencoder_learning_rate: 3.0e-4
+  superresolution_learning_rate: 2.0e-4
+  weight_decay: 1.0e-5
+  patience: 12
+  grad_clip: 1.0
+  amp: true
+  num_workers: 0
+  zone_batch_size: 32
+  superresolution_batch_size: 64
+  validation_batches: 32
+  # One AE example is one complete (sample, frame, zone) field; no anchor sampling.
+  autoencoder_steps_per_epoch: 2000
+  validation_examples: 160
+
+enkf:
+  ensemble_size: 64
+  process_jitter: 1.0e-5
+  observation_jitter: 1.0e-5
+  covariance_eigenvalue_floor: 1.0e-10
+
+diffusion:
+  train_steps: 1000
+  sample_steps: 50
+  beta_start: 1.0e-4
+  beta_end: 0.02
+  ensemble_members: 64
+
+reconstruct:
+  decode_cell_chunk: 131072
+  save_frames: [120, 600, 1800]
+
+
+uncertainty:
+  # Central prediction intervals used for reliability diagrams.
+  nominal_levels: [0.50, 0.80, 0.90]
+
+benchmark:
+  # Representative online update times used by 07_benchmark.py.
+  times_s: [600, 1200, 1800]
+  warmup: 1
+  repeats: 3
+  update_interval_s: 30.0
+
+smoke:
+  max_samples: 3
+  max_frames: 5
+  max_cells: 20000
+  epochs: 2
+  batches: 2
+  autoencoder_steps_per_epoch: 4
+  validation_examples: 4
+  ensemble_size: 4
+  diffusion_train_steps: 20
+  diffusion_sample_steps: 4
+  diffusion_members: 4
+  cell_chunk: 4096
