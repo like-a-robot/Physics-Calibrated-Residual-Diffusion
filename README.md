@@ -2,11 +2,11 @@
 
 Research code accompanying the manuscript by **Yueyue Guo and Lei Su**, Xinjiang University.
 
-This project reconstructs high-resolution transient temperature fields from sparse temperature observations using a **coarse-fine scale hierarchical calibration framework**. A physics-based zonal dynamic model and ensemble Kalman filter (EnKF) track and calibrate regional thermal evolution. Conditioned on the assimilated zonal states, a latent residual diffusion model recovers unresolved fine-scale temperature structures.
+This project reconstructs high-resolution transient temperature fields from temperature observations using a **coarse-fine scale hierarchical calibration framework**. A physics-based zonal dynamic model and ensemble Kalman filter (EnKF) track and calibrate regional thermal evolution. Conditioned on the assimilated zonal states, a latent residual diffusion model recovers unresolved fine-scale temperature structures.
 
 ![Coarse-fine scale hierarchical calibration framework](docs/assets/hierarchical-framework.png)
 
-*Figure 4 from the manuscript. Coarse-scale zonal calibration guides conditional residual generation and ensemble reconstruction.*
+*Figure 4 from the manuscript. Coarse-fine scale hierarchical calibration framework.*
 
 ## Method
 
@@ -76,6 +76,12 @@ python -m pip install -r requirements.txt
 
 The implementation uses PyTorch, NumPy, SciPy, Matplotlib, and PyYAML. For GPU execution, use a PyTorch build compatible with your CUDA environment and select `--device cuda:0`. CPU execution is available through `--device cpu`.
 
+### Data availability
+
+The transient CFD dataset is not included in this repository due to its large storage requirements. Researchers interested in accessing the dataset for research or reproducibility purposes may contact the authors to request access. After obtaining the dataset, place the files under `data/raw/` using the layout above, or update the data paths in `scripts/config.yaml`.
+
+Trained model checkpoints are not bundled with this repository.
+
 ## Data preparation
 
 Set the input paths in [`scripts/config.yaml`](scripts/config.yaml). Relative paths are resolved against `project.root_dir`, which is itself relative to the configuration file. The default `..` points to the repository root.
@@ -96,11 +102,7 @@ data/raw/
 
 Each sample NPZ contains `temperature_C` and `times_s`. Mesh geometry, zone assignments, equipment geometry, and sensor locations are validated during preparation.
 
-### Data availability
 
-The transient CFD dataset is not included in this repository due to its large storage requirements. Researchers interested in accessing the dataset for research or reproducibility purposes may contact the authors to request access. After obtaining the dataset, place the files under `data/raw/` using the layout above, or update the data paths in `scripts/config.yaml`.
-
-Trained model checkpoints are not bundled with this repository.
 
 ## Running the experiments
 
