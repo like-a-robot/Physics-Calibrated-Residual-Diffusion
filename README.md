@@ -6,7 +6,7 @@ This project reconstructs high-resolution transient temperature fields a **coars
 
 ![Coarse-fine scale hierarchical calibration framework](docs/assets/hierarchical-framework.png)
 
-*Figure 4 from the manuscript. Coarse-scale zonal calibration guides conditional residual generation and ensemble reconstruction.*
+*Figure 4 from the manuscript. Coarse-fine scale hierarchical calibration framework.*
 
 ## Method
 
