@@ -2,17 +2,16 @@
 
 Research code accompanying the manuscript by **Yueyue Guo and Lei Su**, Xinjiang University.
 
-This project reconstructs high-resolution transient temperature fields a **coarse-fine scale hierarchical calibration framework**. A physics-based zonal dynamic model and ensemble Kalman filter (EnKF) track and calibrate regional thermal evolution. Conditioned on the assimilated zonal states, a latent residual diffusion model recovers unresolved fine-scale temperature structures.
+This project reconstructs high-resolution transient temperature fields from sparse temperature observations using a **coarse-fine scale hierarchical calibration framework**. A physics-based zonal dynamic model and ensemble Kalman filter (EnKF) track and calibrate regional thermal evolution. Conditioned on the assimilated zonal states, a latent residual diffusion model recovers unresolved fine-scale temperature structures.
 
 ![Coarse-fine scale hierarchical calibration framework](docs/assets/hierarchical-framework.png)
 
-*Figure 4 from the manuscript. Coarse-fine scale hierarchical calibration framework.*
+*Figure 4 from the manuscript. Coarse-scale zonal calibration guides conditional residual generation and ensemble reconstruction.*
 
 ## Method
 
 1. **Coarse-scale zonal thermal dynamics.** Represent each connected fluid zone by its volume-weighted mean temperature. Model its evolution using inter-zone heat transport, rack heat dissipation, cooling effects, and a temporal graph neural residual.
-2. **Measurement-based calibration.** Assimilate sparse temperature observations in the zonal state space with EnKF. The resulting analysis ensemble provides physically interpretable regional thermal states and their uncertainty.
-3. **Fine-scale residual diffusion.** Encode temperature residuals into a latent space and generate residual samples conditioned on analysis-member histories, state uncertainty, operating inputs, and observation innovations. Decode each sample and combine it with the corresponding zonal analysis member:
+2. **Fine-scale residual diffusion.** Encode temperature residuals into a latent space and generate residual samples conditioned on analysis-member histories, state uncertainty, operating inputs, and observation innovations. Decode each sample and combine it with the corresponding zonal analysis member:
 
 $$
 \widehat{\mathbf{T}}_t^{(m)} = U\!\left(\mathbf{z}_t^{a,(m)}\right) + D_\phi\!\left(\widehat{\mathbf{h}}_t^{(m)}\right).
@@ -95,7 +94,13 @@ data/raw/
 └── equipment_physical_layout_original.csv
 ```
 
-Each sample NPZ contains `temperature_C` and `times_s`. Mesh geometry, zone assignments, equipment geometry, and sensor locations are validated during preparation. Raw CFD data and trained checkpoints are not bundled with this repository.
+Each sample NPZ contains `temperature_C` and `times_s`. Mesh geometry, zone assignments, equipment geometry, and sensor locations are validated during preparation.
+
+### Data availability
+
+The transient CFD dataset is not included in this repository due to its large storage requirements. Researchers interested in accessing the dataset for research or reproducibility purposes may contact the authors to request access. After obtaining the dataset, place the files under `data/raw/` using the layout above, or update the data paths in `scripts/config.yaml`.
+
+Trained model checkpoints are not bundled with this repository.
 
 ## Running the experiments
 
